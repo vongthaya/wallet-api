@@ -17,3 +17,6 @@ app.UseHttpsRedirection();
 app.MapControllers();
 
 app.Run();
+
+// Make the test project asscess api project.
+public partial class Program {}
