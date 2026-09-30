@@ -6,6 +6,10 @@ namespace Wallet.Api.Models
 
         public Wallet(string ownerName)
         {
+            if (string.IsNullOrWhiteSpace(ownerName))
+            {
+                throw new ArgumentException("OwnerName is required", nameof(ownerName));
+            }
             OwnerName = ownerName;
         }
     }

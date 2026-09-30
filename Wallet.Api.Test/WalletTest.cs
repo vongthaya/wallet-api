@@ -10,5 +10,15 @@ namespace Wallet.Api.Test
             var kou = new WalletModel("Kou");
             Assert.Equal("Kou", kou.OwnerName);
         }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(" ")]
+        [InlineData(null)]
+        public void CreateWallet_InvalidOwnerName_ThrowsArgumentException(string? ownerName)
+        {
+            var e = Assert.Throws<ArgumentException>(() => new WalletModel(ownerName!));
+            Assert.Equal("ownerName", e.ParamName);
+        }
     }
 }
