@@ -5,26 +5,24 @@ namespace Wallet.Api.Test
     public class WalletTest
     {
         [Fact]
-        public void CreateWallet_SetOwnerName()
+        public void CreateWallet_SetUserId()
         {
-            var kou = new WalletModel("Kou");
-            Assert.Equal("Kou", kou.OwnerName);
+            var wallet = new WalletModel(5);
+            Assert.Equal(5, wallet.UserId);
         }
-
         [Theory]
-        [InlineData("")]
-        [InlineData(" ")]
-        [InlineData(null)]
-        public void CreateWallet_InvalidOwnerName_ThrowsArgumentException(string? ownerName)
+        [InlineData(0)]
+        [InlineData(-1)]
+        public void CreateWallet_InvalidUserId_ThrowsArgumentException(int userId)
         {
-            var e = Assert.Throws<ArgumentException>(() => new WalletModel(ownerName!));
-            Assert.Equal("ownerName", e.ParamName);
+            var e = Assert.Throws<ArgumentException>(() => new WalletModel(userId));
+            Assert.Equal("userId", e.ParamName);
         }
 
         [Fact]
         public void CreateWallet_Balance_Zero()
         {
-            var wallet = new WalletModel("Kou");
+            var wallet = new WalletModel(5);
             Assert.Equal(0m, wallet.Balance);
         }
     }

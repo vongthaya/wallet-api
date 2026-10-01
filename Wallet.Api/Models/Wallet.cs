@@ -2,16 +2,17 @@ namespace Wallet.Api.Models
 {
     public class Wallet
     {
-        public string OwnerName { get; }
+        public int Id { get; private set; }
+        public int UserId { get; private set; }
         public decimal Balance { get; private set; } = 0;
 
-        public Wallet(string ownerName)
+        public Wallet(int userId)
         {
-            if (string.IsNullOrWhiteSpace(ownerName))
+            if (userId <= 0)
             {
-                throw new ArgumentException("OwnerName is required", nameof(ownerName));
+                throw new ArgumentException("User Id is required", nameof(userId));
             }
-            OwnerName = ownerName;
+            UserId = userId;
         }
     }
 }
