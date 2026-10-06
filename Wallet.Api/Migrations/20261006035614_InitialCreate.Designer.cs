@@ -11,7 +11,7 @@ using Wallet.Api.Data;
 namespace Wallet.Api.Migrations
 {
     [DbContext(typeof(WalletDbContext))]
-    [Migration("20261002043336_InitialCreate")]
+    [Migration("20261006035614_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -28,28 +28,33 @@ namespace Wallet.Api.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("first_name");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("last_name");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_users");
 
-                    b.ToTable("Users");
+                    b.ToTable("users", (string)null);
                 });
 
             modelBuilder.Entity("Wallet.Api.Models.Wallet", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
@@ -57,19 +62,23 @@ namespace Wallet.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasPrecision(18)
                         .HasColumnType("numeric(18,0)")
-                        .HasDefaultValue(0m);
+                        .HasDefaultValue(0m)
+                        .HasColumnName("balance");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_wallets");
 
                     b.HasIndex("UserId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("ix_wallets_user_id");
 
-                    b.ToTable("Wallets", t =>
+                    b.ToTable("wallets", null, t =>
                         {
-                            t.HasCheckConstraint("CK_Wallets_Balance_NonNegative", "\"Balance\" >= 0");
+                            t.HasCheckConstraint("ck_wallets_balance_nonnegative", "balance >= 0");
                         });
                 });
 
@@ -79,7 +88,8 @@ namespace Wallet.Api.Migrations
                         .WithOne()
                         .HasForeignKey("Wallet.Api.Models.Wallet", "UserId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_wallets_users_user_id");
                 });
 #pragma warning restore 612, 618
         }

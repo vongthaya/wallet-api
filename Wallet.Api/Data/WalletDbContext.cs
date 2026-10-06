@@ -21,7 +21,7 @@ namespace Wallet.Api.Data
                 entity.Property(w => w.Balance)
                     .HasPrecision(18, 0)
                     .HasDefaultValue(0m);
-                entity.ToTable(t => t.HasCheckConstraint("CK_Wallets_Balance_NonNegative", "\"Balance\" >= 0"));
+                entity.ToTable(t => t.HasCheckConstraint("ck_wallets_balance_nonnegative", "balance >= 0"));
                 entity.HasOne<User>()
                     .WithOne()
                     .HasForeignKey<WalletModel>(w => w.UserId)

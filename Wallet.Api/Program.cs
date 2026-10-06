@@ -9,7 +9,11 @@ builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 
 // Add DbContext
-builder.Services.AddDbContext<WalletDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("WalletDb")));
+builder.Services.AddDbContext<WalletDbContext>(options =>
+    options
+        .UseNpgsql(builder.Configuration.GetConnectionString("WalletDb"))
+        .UseSnakeCaseNamingConvention()
+);
 
 var app = builder.Build();
 
