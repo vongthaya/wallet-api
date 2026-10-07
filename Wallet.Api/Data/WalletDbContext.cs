@@ -26,6 +26,9 @@ namespace Wallet.Api.Data
                     .WithOne()
                     .HasForeignKey<WalletModel>(w => w.UserId)
                     .OnDelete(DeleteBehavior.Restrict);
+
+                entity.Property(w => w.CreatedDt)
+                    .HasDefaultValueSql("now()");
             });
         }
     }

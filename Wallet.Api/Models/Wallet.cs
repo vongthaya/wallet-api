@@ -5,6 +5,7 @@ namespace Wallet.Api.Models
         public int Id { get; private set; }
         public int UserId { get; private set; }
         public decimal Balance { get; private set; } = 0;
+        public DateTime CreatedDt { get; private set; }
 
         public Wallet(int userId)
         {
