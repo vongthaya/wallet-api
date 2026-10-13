@@ -1,0 +1,13 @@
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: wallet
+      POSTGRES_PASSWORD: wallet
+      POSTGRES_DB: wallet
+    ports:
+      - "127.0.0.1:5436:5432"
+    volumes:
+      - wallet_data:/var/lib/postgresql # mount: ສຽບ wallet_data ເຂົ້າ folder ນີ້
+volumes:
+  wallet_data: # ສັ່ງໃຫ້ docker ສ້າງ volume ຊື່ wallet_data ໃຫ້

@@ -3,3 +3,12 @@ __pycache__/
 *.pyc
 db.sqlite3
 .env
+**/bin/
+**/obj/
+.vscode/
+CLAUDE.local.md
+docs/notes.md
+docs/progress.md
+docs/project-instructions.md
+docs/schedule.html
+.claude/
