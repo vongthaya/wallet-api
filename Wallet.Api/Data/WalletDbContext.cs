@@ -22,7 +22,7 @@ namespace Wallet.Api.Data
                     .HasPrecision(18, 0)
                     .HasDefaultValue(0m);
                 entity.ToTable(t => t.HasCheckConstraint("ck_wallets_balance_nonnegative", "balance >= 0"));
-                entity.HasOne<User>()
+                entity.HasOne(w => w.Owner)
                     .WithOne()
                     .HasForeignKey<WalletModel>(w => w.UserId)
                     .OnDelete(DeleteBehavior.Restrict);

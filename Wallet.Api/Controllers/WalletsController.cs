@@ -18,7 +18,21 @@ namespace Wallet.Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> WalletDetail(int id)
         {
-            var wallet = await _dbContext.Wallets.FirstOrDefaultAsync(w => w.Id == id);
+            var wallet = await _dbContext.Wallets
+                .Where(w => w.Id == id)
+                .Select(w => new
+                {
+                    id = w.Id,
+                    owner = new
+                    {
+                        id = w.Owner.Id,
+                        firstName = w.Owner.FirstName,
+                        lastName = w.Owner.LastName,
+                    },
+                    balance = w.Balance.ToString(),
+                    currency = "LAK",
+                })
+                .FirstOrDefaultAsync();
             if (wallet == null)
             {
                 return Problem(
@@ -27,7 +41,7 @@ namespace Wallet.Api.Controllers
                     detail: $"Wallet {id} was not found"
                 );
             }
-            return Ok(new { id = wallet.Id  });
+            return Ok(wallet);
         }
     }
 }
