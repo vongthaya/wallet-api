@@ -62,7 +62,7 @@ public class WalletDetailTests : IClassFixture<WalletTestWebApplicationFactory>
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         var body = await response.Content.ReadAsStringAsync();
-        var json = JsonDocument.Parse(body);
+        using var json = JsonDocument.Parse(body);
         var walletId = json.RootElement.GetProperty("id").GetInt32();
         var balance = json.RootElement.GetProperty("balance").GetString();
         var currency = json.RootElement.GetProperty("currency").GetString();
