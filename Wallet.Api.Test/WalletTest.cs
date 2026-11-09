@@ -25,5 +25,17 @@ namespace Wallet.Api.Test
             var wallet = new WalletModel(5);
             Assert.Equal(0m, wallet.Balance);
         }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-1)]
+        public void Deposit_NonPositiveAmount_Throws(decimal amount)
+        {
+            var wallet = new WalletModel(userId: 1);
+
+            var ex = Assert.Throws<ArgumentOutOfRangeException>(() => wallet.Deposit(amount));
+
+            Assert.Equal("amount", ex.ParamName);
+        }
     }
 }

@@ -16,5 +16,11 @@ namespace Wallet.Api.Models
             }
             UserId = userId;
         }
+
+        public void Deposit(decimal amount)
+        {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(amount);
+            Balance += amount;
+        }
     }
 }
