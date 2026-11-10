@@ -20,21 +20,7 @@ namespace Wallet.Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> WalletDetail(int id)
         {
-            var wallet = await _dbContext.Wallets
-                .Where(w => w.Id == id)
-                .Select(w => new
-                {
-                    id = w.Id,
-                    owner = new
-                    {
-                        id = w.Owner.Id,
-                        firstName = w.Owner.FirstName,
-                        lastName = w.Owner.LastName,
-                    },
-                    balance = w.Balance.ToString(),
-                    currency = "LAK",
-                })
-                .FirstOrDefaultAsync();
+            var wallet = await GetWalletDetail(id);
             if (wallet == null)
             {
                 return Problem(
@@ -53,15 +39,13 @@ namespace Wallet.Api.Controllers
             {
                 return Problem(statusCode: StatusCodes.Status400BadRequest, title: "Bad Request", detail: "Invalid amount");
             }
-            var exists = await _dbContext.Wallets.AnyAsync(w => w.Id == id);
-            if (!exists)
+            var wallet = await _dbContext.Wallets
+                .Where(w => w.Id == id)
+                .FirstOrDefaultAsync();
+            if (wallet == null)
             {
                 return Problem(statusCode: 404, title: "Not Found", detail: $"Wallet {id} was not found");
             }
-
-            var wallet = await _dbContext.Wallets
-                .Where(w => w.Id == id)
-                .FirstAsync();
 
             var amount = decimal.Parse(request.Amount);
 
@@ -69,7 +53,14 @@ namespace Wallet.Api.Controllers
 
             await _dbContext.SaveChangesAsync();
 
-            var walletResponse = await _dbContext.Wallets
+            var walletResponse = await GetWalletDetail(id);
+
+            return Ok(walletResponse);
+        }
+
+        private async Task<object?> GetWalletDetail(int id)
+        {
+            return await _dbContext.Wallets
                 .Where(w => w.Id == id)
                 .Select(w => new
                 {
@@ -84,8 +75,6 @@ namespace Wallet.Api.Controllers
                     currency = "LAK",
                 })
                 .FirstOrDefaultAsync();
-
-            return Ok(walletResponse);
         }
     }
 }
