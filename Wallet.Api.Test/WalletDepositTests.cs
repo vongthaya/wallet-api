@@ -94,5 +94,31 @@ namespace Wallet.Api.Test
             Assert.Equal("0", ohWalletDetailBalance);
         }
 
+        [Fact]
+        public async Task WalletDeposit_BalanceOverflow_ReturnConflict()
+        {
+            using var scope = _factory.Services.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<WalletDbContext>();
+
+            var kou = new User(firstName: "Kou", lastName: "Phounsavanh");
+            dbContext.Users.Add(kou);
+            await dbContext.SaveChangesAsync();
+
+            var wallet = new WalletModel(userId: kou.Id);
+            dbContext.Wallets.Add(wallet);
+            await dbContext.SaveChangesAsync();
+
+            var responseA = await _client.PostAsJsonAsync($"/wallets/{wallet.Id}/deposit", new { amount = "999999999999999999" });
+            Assert.Equal(HttpStatusCode.OK, responseA.StatusCode);
+
+            var responseB = await _client.PostAsJsonAsync($"/wallets/{wallet.Id}/deposit", new { amount = "1" });
+            Assert.Equal(HttpStatusCode.Conflict, responseB.StatusCode);
+
+            var walletDetailResponse = await _client.GetAsync($"/wallets/{wallet.Id}");
+            var walletDetailBody = await walletDetailResponse.Content.ReadAsStringAsync();
+            using var walletDetailJson = JsonDocument.Parse(walletDetailBody);
+            var balance = walletDetailJson.RootElement.GetProperty("balance").GetString();
+            Assert.Equal("999999999999999999", balance);
+        }
     }
 }

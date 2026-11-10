@@ -49,7 +49,14 @@ namespace Wallet.Api.Controllers
 
             var amount = decimal.Parse(request.Amount);
 
-            wallet.Deposit(amount);
+            try
+            {
+                wallet.Deposit(amount);
+            }
+            catch (InvalidOperationException)
+            {
+                return Problem(statusCode: StatusCodes.Status409Conflict, title: "Conflict", detail: "Deposit would exceed the maximum balance");
+            }
 
             await _dbContext.SaveChangesAsync();
 

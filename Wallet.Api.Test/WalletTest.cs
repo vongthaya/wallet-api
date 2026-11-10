@@ -37,5 +37,16 @@ namespace Wallet.Api.Test
 
             Assert.Equal("amount", ex.ParamName);
         }
+
+        [Fact]
+        public void Deposit_ExceedMaxBalance_Throws_InvalidOperationException()
+        {
+            var wallet = new WalletModel(userId: 1);
+            wallet.Deposit(999999999999999999);
+
+            Assert.Throws<InvalidOperationException>(() => wallet.Deposit(amount: 1));
+            Assert.Equal(999999999999999999, wallet.Balance);
+        }
+
     }
 }
