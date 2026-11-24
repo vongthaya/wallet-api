@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
-using System.Xml.Serialization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Wallet.Api.Data;
 using Wallet.Api.Models;
@@ -119,6 +119,34 @@ namespace Wallet.Api.Test
             using var walletDetailJson = JsonDocument.Parse(walletDetailBody);
             var balance = walletDetailJson.RootElement.GetProperty("balance").GetString();
             Assert.Equal("999999999999999999", balance);
+        }
+
+        [Fact]
+        public async Task WalletDeposit_Concurrent_NoLostUpdate()
+        {
+            using var scope = _factory.Services.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<WalletDbContext>();
+
+            var kou = new User(firstName: "Kou", lastName: "Phounsavanh");
+            dbContext.Users.Add(kou);
+            await dbContext.SaveChangesAsync();
+
+            var wallet = new WalletModel(kou.Id);
+            dbContext.Wallets.Add(wallet);
+            await dbContext.SaveChangesAsync();
+
+            var tasks = Enumerable.Range(0, 100)
+                .Select(_ => _client.PostAsJsonAsync($"/wallets/{wallet.Id}/deposit", new { amount = "10" }));
+            var responses = await Task.WhenAll(tasks);
+            foreach (var response in responses)
+            {
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            }
+            wallet = await dbContext.Wallets
+                .AsNoTracking()
+                .Where(w => w.Id == wallet.Id)
+                .FirstOrDefaultAsync();
+            Assert.Equal(1000, wallet!.Balance);
         }
     }
 }

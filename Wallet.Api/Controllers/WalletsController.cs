@@ -2,6 +2,7 @@ using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Wallet.Api.Data;
+using WalletModel = Wallet.Api.Models.Wallet;
 
 namespace Wallet.Api.Controllers
 {
@@ -49,16 +50,13 @@ namespace Wallet.Api.Controllers
 
             var amount = decimal.Parse(request.Amount);
 
-            try
-            {
-                wallet.Deposit(amount);
-            }
-            catch (InvalidOperationException)
+            var result = await _dbContext.Wallets
+                .Where(w => w.Id == wallet.Id && (w.Balance + amount) <= WalletModel.MAX_BALANCE)
+                .ExecuteUpdateAsync(setter => setter.SetProperty(w => w.Balance, w => w.Balance + amount));
+            if (result == 0)
             {
                 return Problem(statusCode: StatusCodes.Status409Conflict, title: "Conflict", detail: "Deposit would exceed the maximum balance");
             }
-
-            await _dbContext.SaveChangesAsync();
 
             var walletResponse = await GetWalletDetail(id);
 
