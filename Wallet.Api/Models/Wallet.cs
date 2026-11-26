@@ -7,6 +7,7 @@ namespace Wallet.Api.Models
         public decimal Balance { get; private set; } = 0;
         public DateTime CreatedDt { get; private set; }
         public User Owner { get; private set; } = null!;
+        public const decimal MAX_BALANCE = 999999999999999999m;
 
         public Wallet(int userId)
         {

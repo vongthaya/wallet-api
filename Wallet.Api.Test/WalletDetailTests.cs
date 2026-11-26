@@ -8,6 +8,7 @@ using WalletModel = Wallet.Api.Models.Wallet;
 
 namespace Wallet.Api.Test;
 
+[Collection("Wallet database")]
 public class WalletDetailTests : IClassFixture<WalletTestWebApplicationFactory>
 {
     private readonly HttpClient _client;
